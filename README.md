@@ -40,7 +40,7 @@
 
 Stock and daily tables are filled from polygon API, climate_score info is scrapped from google/finance.
 
-- 3) Create two additional tables. The following tables are automatically updated via trigger functions when any changes occurs in one of the main tables(daily, stock):
+- 3) Create two additional tables. The following tables are automatically updated via trigger functions when any changes occurs in one of the main tables (daily, stock):
 
 	create table avg_ohlc  
 	(  
@@ -100,6 +100,6 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 
 - 5) Create two triggers in Supabase:  
 agg_company_per_climate_trigger and ohlc_trigger with events after delete, after insert and after delete.  
-The first pointing climate_score and the second pointing daily table(so when these tables suffer any change the triggers insert agregated data in agg_company_per_climate and avg_ohlc)
+The first pointing climate_score and the second pointing daily table (so when these tables suffer any change the triggers insert agregated data in agg_company_per_climate and avg_ohlc)
 
 - 6) Run app.py (the app runs a flask server listening to /average_ohlc and /climate_score_company_agg endpoints which return aggregated information about stocks. Also in background runs a script to get data from APIs and scrape data from google finance every day)
