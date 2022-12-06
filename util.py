@@ -9,6 +9,7 @@ import json
 class Util:
     __api_key = os.getenv('SUPAKEY')
     __authorization = os.getenv('SUPA_AUTH')
+    __base_id = os.getenv('BASE_ID')
     
     def __get_date_list(self, start, end):
         ''' Given a start date and end date obtains the list of dates between them (as a date object)
@@ -56,7 +57,7 @@ class Util:
             details_dict (dict): object with the data required
 
         '''
-
+        print(f'getting details data from ticker {ticker} on {date} from polygon')
         response = requests.get(f'https://api.polygon.io/v3/reference/tickers/{ticker}?date={date}&apiKey=Fz_OgqhVpfFCvAyLTo2ct7Rhyn7LO5pS')
         response = response.json()
         if response['status'] == 'NOT_FOUND':
@@ -88,6 +89,7 @@ class Util:
         ''' 
 
         url = f'https://api.polygon.io/v1/open-close/{ticker}/{date}?adjusted=true&apiKey=Fz_OgqhVpfFCvAyLTo2ct7Rhyn7LO5pS'
+        print(f'getting daily data from ticker {ticker} on {date} from polygon')
         response = requests.get(url)
         response = response.json()
         if response['status'] == 'NOT_FOUND':
@@ -117,14 +119,14 @@ class Util:
             data (json): json object with data
 
         ''' 
-        url = f'https://tggebwlvahkyhaozxpwv.supabase.co/rest/v1/{table}?select=*'
+        url = f'https://{self.__base_id}.supabase.co/rest/v1/{table}?select=*'
         headers = {'apikey': self.__api_key, 'Authorization': self.__authorization}
         r = requests.get(url=url, headers=headers)
         data = r.json()
         return data
 
 
-    def upsert_data_into_db(self,table:str,data:list):
+    def upsert_data_into_db(self, table:str,data:list):
         ''' Given a table name and a dataframe upsert data into the table
         
         Args:
@@ -135,7 +137,7 @@ class Util:
         ''' 
 
         headers = {'apikey': self.__api_key, 'Authorization': self.__authorization,  'Prefer': 'resolution=merge-duplicates'}
-        url = f'https://tggebwlvahkyhaozxpwv.supabase.co/rest/v1/{table}'
+        url = f'https://{self.__base_id}.supabase.co/rest/v1/{table}'
 
         for item in data: 
             try:

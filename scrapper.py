@@ -5,6 +5,10 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
 from datetime import datetime
+
+from webdriver_manager.chrome import ChromeDriverManager
+#driver = webdriver.Chrome(ChromeDriverManager().install())
+
 current_date = datetime.now().date().strftime('%Y-%m-%d')
 
 #adding options on chrome
@@ -16,8 +20,8 @@ class Scrapper:
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_argument('--user-agent="Mozilla/5.0 (Windows Phone 10.0; Android 4.2.1; Microsoft; Lumia 640 XL LTE) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Mobile Safari/537.36 Edge/12.10166"')
         chrome_options.add_argument('headless')
-        driver = webdriver.Chrome(chrome_options=chrome_options)
-        #driver.get('https://www.google.com/finance/')
+        driver = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=chrome_options)
+        driver.get('https://www.google.com/finance/')
         driver.get(url)
         climate_list = []
         for i,ticker in enumerate(tickers):
@@ -40,5 +44,6 @@ class Scrapper:
                             'date': current_date,
                             'climate_change_score': climate_score
                             }
+            print(f'the climate score for {ticker} is {climate_dict}')
             climate_list.append(climate_dict)
         return climate_list
