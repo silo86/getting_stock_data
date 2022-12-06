@@ -12,8 +12,9 @@ api = Api(app)
 
 #run the main process in the background every 24 hs
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(main_process,'interval',minutes=1440)#,minutes=1440)
+sched.add_job(main_process,'interval',minutes=1440)
 sched.start()
+
 
 class AvgOhlc(Resource):
     

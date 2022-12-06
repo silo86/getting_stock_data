@@ -21,6 +21,7 @@ scrapper = Scrapper()
 def main_process():
     tickers = ['F','CMCSA','AAPL', 'ORCL', 'XRX', 'WOR', 'WSM', 'JNJ', 'WCC', 'MMM']
     daily_data = util.get_data_from_db(table = 'daily') 
+    print(daily_data)
     #if it is already data in daily table get only 1 day of data from polygon
     max_days = 7 if len(daily_data) == 0 else 1 
     yesterday = (datetime.now() - timedelta(1)).date()
