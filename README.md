@@ -102,6 +102,6 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 agg_company_per_climate_trigger and ohlc_trigger with events after delete, after insert and after delete.  
 The first pointing climate_score and the second pointing daily table (so when these tables suffer any change the triggers insert agregated data in agg_company_per_climate and avg_ohlc)
 
-- 6) Add apikey and authorization provided by supabase API to your environment variables as SUPAKEY and SUPA_AUTH
+- 6) Add apikey and authorization provided by supabase API to your environment variables as SUPAKEY and SUPA_AUTH  
 
 - 7) Run app.py (the app runs a flask server listening to /average_ohlc and /climate_score_company_agg endpoints which return aggregated information about stocks. Also in background runs a script to get data from APIs and scrape data from google finance every day)
