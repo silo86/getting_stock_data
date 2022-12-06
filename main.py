@@ -28,7 +28,7 @@ def main_process():
     for ticker in tickers:
         details = []
         daily = []
-        while len(details) < 1:
+        while len(details) < max_days:
             if yesterday.weekday() not in (5,6): #market only work on week days
                 details.append(util.get_stock_details_from_polygon(ticker, yesterday.strftime('%Y-%m-%d') ))
             while(None in details):
@@ -42,6 +42,7 @@ def main_process():
             while(None in daily):
                 daily.remove(None)
             yesterday = yesterday - timedelta(1)
+        yesterday = (datetime.now() - timedelta(1)).date()
         util.upsert_data_into_db('stock',details)
         util.upsert_data_into_db('daily',daily)
     climate_list = scrapper.get_climate_change_score(tickers,'https://www.google.com/finance/') #google url

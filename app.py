@@ -43,9 +43,16 @@ class ClimateScoreCompany(Resource):
         data = util.get_data_from_db(table = 'agg_company_per_climate')  # get data from the summary table agg_company...
         return {'data': data}, 200  # return data and 200 OK
 
+class MarketCapRankAnalytics(Resource):
+    
+    def get(self):
+        data = util.get_data_from_db(table = 'market_cap_rank_analytics')  # get data from the summary table agg_company...
+        return {'data': data}, 200  # return data and 200 OK
+
 
 api.add_resource(AvgOhlc, '/average_ohlc')  # add endpoints
 api.add_resource(ClimateScoreCompany, '/climate_score_company_agg')
+api.add_resource(MarketCapRankAnalytics, '/market_cap_rank_analytics')
 
 if __name__ == '__main__':
     app.run()  

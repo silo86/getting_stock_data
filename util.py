@@ -68,6 +68,7 @@ class Util:
         else:
             details_dict = { 
                 'ticker': response['results']['ticker'],
+                'date': date,
                 'name': response['results']['name'],
                 'primary_exchange': response['results']['primary_exchange'],
                 'market_cap': response['results']['market_cap'],
