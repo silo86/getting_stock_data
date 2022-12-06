@@ -54,7 +54,7 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	  FOREIGN KEY (ticker) REFERENCES stock(ticker)  
 	);  
 
-	create table agg_company_per_climate_  
+	create table agg_company_per_climate    
 	(  
 	  ticker varchar NOT NULL,  
 	  climate_change_score numeric,  
