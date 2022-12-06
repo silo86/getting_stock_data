@@ -59,7 +59,7 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	  ticker varchar NOT NULL,  
 	  climate_change_score varchar,  
 	  name varchar,  
-	  PRIMARY KEY(ticker)  
+	  PRIMARY KEY(ticker,climate_change_score)  
 	);  
 
 - 4) Create two functions in supabase with return type trigger:agg_company_per_climate_function and avg_ohlc_function with the following code:  
