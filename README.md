@@ -57,7 +57,7 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	create table agg_company_per_climate    
 	(  
 	  ticker varchar NOT NULL,  
-	  climate_change_score numeric,  
+	  climate_change_score varchar,  
 	  name varchar,  
 	  PRIMARY KEY(ticker)  
 	);  
