@@ -1,52 +1,51 @@
-#from logging import raiseExceptions
-#import requests
-from logger_config import LoggerConfig
-#import logging
-#import json
-#import sys
+from flask import Flask, request
+from flask_restful import Resource, Api
+import pandas as pd
 from util import Util
-from scrapper import Scrapper
-from datetime import datetime, timedelta
+from main import main_process
+from apscheduler.schedulers.background import BackgroundScheduler
 
-loggerConfig = LoggerConfig()
-logger = loggerConfig.get_logger()
+
 util = Util()
-scrapper = Scrapper()
+app = Flask(__name__)
+api = Api(app)
+
+#run the main process in the background every 24 hs
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(main_process,'interval',seconds=60)#,minutes=1440)
+sched.start()
+
+class AvgOhlc(Resource):
+    
+    def get(self):
+        tickers = request.args.get('tickers')
+        data = util.get_data_from_db(table = 'avg_ohlc')  # get data from the summary table avg_ohlc
+        if tickers is None:
+            return {'data': data}, 200
+        else:
+            char_list = tickers.split(',')
+            ticker_list = []
+            for char in char_list:
+                start_pos = char.find("'")
+                from_char = char[start_pos+1:]
+                end_pos = from_char.find("'")
+                ticker_list.append(from_char[:end_pos])
+            
+            data_ = []
+            for element in data:
+                if element['ticker'] in ticker_list:
+                    data_.append(element)
+            return {'data': data_}, 200  # return data and 200 OK
+
+class ClimateScoreCompany(Resource):
+    
+    def get(self):
+        data = util.get_data_from_db(table = 'agg_company_per_climate')  # get data from the summary table agg_company...
+        return {'data': data}, 200  # return data and 200 OK
 
 
-
-def main():
-    tickers = ['F','CMCSA','AAPL', 'ORCL', 'XRX', 'WOR', 'WSM', 'JNJ', 'WCC', 'MMM']
-    daily_data = util.get_data_from_db(table = 'daily') 
-    #if it is already data in daily table get only 1 day of data from polygon
-    max_days = 7 if len(daily_data) == 0 else 1 
-    yesterday = (datetime.now() - timedelta(1)).date()
-
-    if yesterday.weekday() not in (5,6): #market only work on week days
-        for ticker in tickers:
-            details = []
-            daily = []
-            while len(details) < 1:
-                details.append(util.get_stock_details_from_polygon(ticker, yesterday.strftime('%Y-%m-%d') ))
-                while(None in details):
-                    details.remove(None)
-                yesterday = yesterday - timedelta(1)
-                
-            yesterday = (datetime.now() - timedelta(1)).date()
-            while len(daily) < max_days:
-                daily.append(util.get_daily_open_close_from_polygon(ticker, yesterday.strftime('%Y-%m-%d') ))
-                while(None in daily):
-                    daily.remove(None)
-                yesterday = yesterday - timedelta(1)
-            util.upsert_data_into_db('stock',details)
-            util.upsert_data_into_db('daily',daily)
-        
-    climate_list = scrapper.get_climate_change_score(tickers,'https://www.google.com/finance/') #google url
-    util.upsert_data_into_db('climate_score',climate_list)
-
+api.add_resource(AvgOhlc, '/average_ohlc')  # add endpoints
+api.add_resource(ClimateScoreCompany, '/climate_score_company_agg')
 
 if __name__ == '__main__':
-    main()
-
-
-
+    app.run()  
