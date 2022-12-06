@@ -7,12 +7,8 @@ import json
 
 
 class Util:
-    #__api_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnZ2Vid2x2YWhreWhhb3p4cHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5MTIzNzgsImV4cCI6MTk4NTQ4ODM3OH0.7Efj-4x5RKKFXQd-5JhfiOU1GW_TWuX4_6FDzyHP33s'
     __api_key = os.getenv('SUPAKEY')
     __authorization = os.getenv('SUPA_AUTH')
-    #__authorization = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnZ2Vid2x2YWhreWhhb3p4cHd2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE2Njk5MTIzNzgsImV4cCI6MTk4NTQ4ODM3OH0.7Efj-4x5RKKFXQd-5JhfiOU1GW_TWuX4_6FDzyHP33s'
-
-
     
     def get_date_list(self, start, end):
         ''' Given a start date and end date obtains the list of dates between them (as a date object)
