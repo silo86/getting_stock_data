@@ -38,7 +38,7 @@
 
 Stock and daily tables are filled from polygon API, climate_score info is scrapped from google/finance.
 
-- 3) Create additional tables to store calculations based on the 3 main tables. The following tables are automatically updated via trigger functions when any changes occurs in one of the main tables (daily, stock):
+- 3) Create additional tables to store calculations based on the 3 main tables. The following tables are automatically updated via trigger functions when any changes occurs in one of the main tables (daily, stock, climate_score):
 
 	create table avg_ohlc  
 	(  
