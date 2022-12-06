@@ -141,34 +141,34 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	return null;  
 	end;  
 
-	--report_3_function
+	--report_3_function  
 	begin 
-	insert into public.market_cap_rank_analytics(market_cap_rank, avg_market_cap, avg_num_employees, avg_weekly_volume)
-	select
-	market_cap_rank,
-	--extract(year from s.date::date) as year,
-	--extract(week from s.date::date) as week,
-	avg(s.market_cap) as avg_market_cap,
-	avg(s.total_employees) as avg_num_employees,
-	avg(volume) as avg_weekly_volume
-	from stock s
-	left join daily as d on d.ticker = s.ticker and d.date= s.date
-	left join companies_rank_by_market_cap cr
-	on s.ticker = cr.ticker
-	group by market_cap_rank--, year, week
-	on conflict(market_cap_rank)
-	do update set avg_market_cap = EXCLUDED.avg_market_cap,
-	avg_num_employees = EXCLUDED.avg_num_employees,
-	avg_weekly_volume = EXCLUDED.avg_weekly_volume;
-	return null;
-	end;
+	insert into public.market_cap_rank_analytics(market_cap_rank, avg_market_cap, avg_num_employees, avg_weekly_volume)  
+	select  
+	market_cap_rank,  
+	--extract(year from s.date::date) as year,  
+	--extract(week from s.date::date) as week,  
+	avg(s.market_cap) as avg_market_cap,  
+	avg(s.total_employees) as avg_num_employees,  
+	avg(volume) as avg_weekly_volume  
+	from stock s  
+	left join daily as d on d.ticker = s.ticker and d.date= s.date  
+	left join companies_rank_by_market_cap cr  
+	on s.ticker = cr.ticker  
+	group by market_cap_rank--, year, week  
+	on conflict(market_cap_rank)  
+	do update set avg_market_cap = EXCLUDED.avg_market_cap,  
+	avg_num_employees = EXCLUDED.avg_num_employees,  
+	avg_weekly_volume = EXCLUDED.avg_weekly_volume;  
+	return null;  
+	end;  
 
 
 - 5) Create four triggers with events after update, after insert and after delete in Supabase:  
-- agg_company_per_climate_trigger pointing climate_score (so when this table suffer any change the trigger upsert agregated data in table agg_company_per_climate.)    
-- ohlc_trigger  pointing daily table  (so when this table suffer any change the trigger upsert agregated data in table avg_ohlc.)  
-- companies_rank_by_mc_trigger pointing table stock (so when this table suffer any change the trigger upsert agregated data in table companies_rank_by_market_cap.) 
-- report_3_trigger pointing table stock (so when this table suffer any change the trigger upsert agregated data in table market_cap_rank_analytics.)
+  - agg_company_per_climate_trigger pointing climate_score (so when this table suffer any change the trigger upsert agregated data in table agg_company_per_climate.)    
+  - ohlc_trigger  pointing daily table  (so when this table suffer any change the trigger upsert agregated data in table avg_ohlc.)  
+  - companies_rank_by_mc_trigger pointing table stock (so when this table suffer any change the trigger upsert agregated data in table companies_rank_by_market_cap.) 
+  - report_3_trigger pointing table stock (so when this table suffer any change the trigger upsert agregated data in table market_cap_rank_analytics.)
 
 - 6) Add apikey, authorization and supabaseUrl provided by supabase API to your environment variables as SUPAKEY, SUPA_AUTH, BASE_ID 
 
