@@ -10,7 +10,7 @@ class Util:
     __api_key = os.getenv('SUPAKEY')
     __authorization = os.getenv('SUPA_AUTH')
     
-    def get_date_list(self, start, end):
+    def __get_date_list(self, start, end):
         ''' Given a start date and end date obtains the list of dates between them (as a date object)
         
         Args:
@@ -41,7 +41,7 @@ class Util:
         for date in datelist:
             date = datetime.fromisoformat(date)
             datelist_.append(date)
-        dates = self.get_date_list(datelist_[0],datelist_[1])
+        dates = self.__get_date_list(datelist_[0],datelist_[1])
         dates = [date.strftime('%Y-%m-%d') for date in dates]
         return dates
 
