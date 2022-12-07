@@ -1,7 +1,7 @@
 # getting_stock_data
 **Steps to install:**
-- 1) Install requirements.txt
-- 2) Create the following 3 main tables in Supabase:
+- **1)** Install requirements.txt
+- **2)** Create the following 3 main tables in Supabase:
 
 	create table stock  
 	(  
@@ -38,7 +38,7 @@
 
 Stock and daily tables are filled from polygon API, climate_score info is scrapped from google/finance.
 
-- 3) Create additional tables to store calculations based on the 3 main tables. The following tables are automatically updated via trigger functions when any changes occurs in one of the main tables (daily, stock, climate_score):
+- **3)** Create additional tables to store calculations based on the 3 main tables. The following tables are automatically updated via trigger functions when any changes occurs in one of the main tables (daily, stock, climate_score):
 
 	create table avg_ohlc  
 	(  
@@ -77,9 +77,10 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	PRIMARY KEY(market_cap_rank)  
 	);  
 
-- 4) Create the following functions in supabase with return type trigger: agg_company_per_climate_function, avg_ohlc_function, companies_rank_by_mc_function and report_3_function with the following code:  
-	--agg_company_per_climate_function
-	begin
+- **4)** Create the following functions in supabase with return type trigger: agg_company_per_climate_function, avg_ohlc_function, companies_rank_by_mc_function and report_3_function with the following code:  
+    
+	--agg_company_per_climate_function  
+	begin  
 		insert into public.agg_company_per_climate(ticker, climate_change_score, name)  
 			select distinct  
 			s.ticker,  
@@ -164,12 +165,12 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	end;  
 
 
-- 5) Create four triggers with events after update, after insert and after delete in Supabase:  
+- **5)** Create four triggers with events after update, after insert and after delete in Supabase:  
   - agg_company_per_climate_trigger pointing climate_score (so when this table suffer any change the trigger upsert agregated data in table agg_company_per_climate.)    
   - ohlc_trigger  pointing daily table  (so when this table suffer any change the trigger upsert agregated data in table avg_ohlc.)  
   - companies_rank_by_mc_trigger pointing table stock (so when this table suffer any change the trigger upsert agregated data in table companies_rank_by_market_cap.) 
   - report_3_trigger pointing table stock (so when this table suffer any change the trigger upsert agregated data in table market_cap_rank_analytics.)
 
-- 6) Add apikey, authorization and supabaseUrl provided by supabase API to your environment variables as SUPAKEY, SUPA_AUTH, BASE_ID 
+- **6)** Add apikey, authorization and supabaseUrl provided by supabase API to your environment variables as SUPAKEY, SUPA_AUTH, BASE_ID 
 
-- 7) Run app.py (the app runs a flask server listening to /average_ohlc and /climate_score_company_agg endpoints which return aggregated information about stocks. Also in background runs a script to get data from APIs and scrape data from google finance every day)
+- **7)** Run app.py (the app runs a flask server listening to /average_ohlc and /climate_score_company_agg endpoints which return aggregated information about stocks. Also in background runs a script to get data from APIs and scrape data from google finance every day)
