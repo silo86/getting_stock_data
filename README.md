@@ -173,4 +173,4 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 
 - **6)** Add apikey, authorization and supabaseUrl provided by supabase API to your environment variables as SUPAKEY, SUPA_AUTH, BASE_ID 
 
-- **7)** Run app.py (the app runs a flask server listening to /average_ohlc and /climate_score_company_agg endpoints which return aggregated information about stocks. Also in background runs a script to get data from APIs and scrape data from google finance every day)
+- **7)** Run app.py (the app runs a flask server listening to /average_ohlc, /market_cap_rank_analytics, /climate_score_company_agg endpoints which return aggregated information about stocks. Also in background runs a script to get data from APIs and scrape data from google finance every day)
