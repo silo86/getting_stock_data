@@ -5,7 +5,8 @@
 
 	create table stock  
 	(  
-	  ticker varchar NOT NULL,  
+	  ticker varchar NOT NULL, 
+	  date varchar NOT NULL,
 	  name varchar NOT NULL,  
 	  primary_exchange varchar,  
 	  market_cap numeric,  
