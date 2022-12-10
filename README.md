@@ -3,7 +3,7 @@
 - **1)** Install requirements.txt
 - **2)** Create the following 3 main tables in Supabase:
 
-	create table stock  
+	- create table stock  
 	(  
 	  ticker varchar NOT NULL, 
 	  date varchar NOT NULL,
@@ -16,7 +16,7 @@
 	  PRIMARY KEY(ticker)  
 	);  
 
-	create table daily  
+	- create table daily  
 	(  
 	  ticker varchar NOT NULL,  
 	  date varchar NOT NULL,  
@@ -28,7 +28,7 @@
 	  PRIMARY KEY(ticker, date),  
 	);  
 
-	create table climate_score  
+	- create table climate_score  
 	(  
 	  ticker varchar NOT NULL,  
 	  date varchar NOT NULL,  
@@ -41,62 +41,94 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 
 - **3)** Create additional tables to store calculations based on the 3 main tables. The following tables are automatically updated via trigger functions when any changes occurs in one of the main tables (daily, stock, climate_score):
 
-	create table avg_ohlc  
-	(  
-	  ticker varchar NOT NULL,  
-	  open numeric,  
-	  high numeric,  
-	  low numeric,  
-	  close numeric,  
-	  volume numeric,  
-	  PRIMARY KEY(ticker),  
-	);  
+	- create table avg_ohlc  
+		(  
+		  ticker varchar NOT NULL,  
+		  open numeric,  
+		  high numeric,  
+		  low numeric,  
+		  close numeric,  
+		  volume numeric,  
+		  PRIMARY KEY(ticker),  
+		);  
 
-	create table agg_company_per_climate    
-	(  
-	  ticker varchar NOT NULL,  
-	  climate_change_score varchar,  
-	  name varchar,  
-	  PRIMARY KEY(ticker,climate_change_score)  
-	);  
+	- create table agg_company_per_climate  
+		(  
+		climate_change_score varchar NOT NULL,  
+		f int,  
+		cmcsa int,  
+		aapl int,  
+		orlc int,  
+		xrx int,  
+		wor int,  
+		wsm int,  
+		jnj int,  
+		wcc int,  
+		mmm int,  
+		PRIMARY KEY(climate_change_score)  
+		);  
 
-	create table companies_rank_by_market_cap  
-	(  
-	market_cap_rank varchar,  
-	score_rank int ,  
-	ticker varchar NOT NULL,  
-	max_mc numeric,  
-	PRIMARY KEY(ticker)  
-	);  
+	- create table companies_rank_by_market_cap  
+		(  
+		market_cap_rank varchar,  
+		score_rank int ,  
+		ticker varchar NOT NULL,  
+		max_mc numeric,  
+		PRIMARY KEY(ticker)  
+		);  
 
-	create table market_cap_rank_analytics  
-	(  
-	market_cap_rank varchar NOT NULL,  
-	avg_market_cap numeric,  
-	avg_num_employees numeric ,  
-	avg_weekly_volume numeric,  
-	PRIMARY KEY(market_cap_rank)  
-	);  
+	- create table market_cap_rank_analytics  
+		(  
+		market_cap_rank varchar NOT NULL,  
+		avg_market_cap numeric,  
+		avg_num_employees numeric ,  
+		avg_weekly_volume numeric,  
+		PRIMARY KEY(market_cap_rank)  
+		);  
 
 - **4)** Create the following functions in supabase with return type trigger: agg_company_per_climate_function, avg_ohlc_function, companies_rank_by_mc_function and report_3_function with the following code:  
     
-	--agg_company_per_climate_function  
+	- --agg_company_per_climate_function    
 	begin  
-		insert into public.agg_company_per_climate(ticker, climate_change_score, name)  
-			select distinct  
-			s.ticker,  
-			climate_change_score,  
-			s.name  
-			from climate_score c  
-			left join stock s   
-			on s.ticker = c.ticker  
-			order by climate_change_score asc  
-	on conflict(ticker, climate_change_score)  
-	do nothing;  
+		insert into public.agg_company_per_climate(climate_change_score, F, CMCSA, AAPL, ORCL, XRX, WOR, WSM, JNJ, WCC, MMM)  
+		with inner_query as (  
+		select distinct  
+		s.ticker,  
+		climate_change_score,  
+		s.name  
+		from climate_score c  
+		left join stock s  
+		on s.ticker = c.ticker  
+		order by climate_change_score asc  
+		)  
+		select climate_change_score,  
+		SUM(case when ticker = 'F' then 1 end ) as "F",  
+		SUM(case when ticker = 'CMCSA' then 1 end ) as "CMCSA",  
+		SUM(case when ticker = 'AAPL' then 1 end ) as "AAPL",  
+		SUM(case when ticker = 'ORCL' then 1 end ) as "ORCL",  
+		SUM(case when ticker = 'XRX' then 1 end ) as "XRX",  
+		SUM(case when ticker = 'WOR' then 1 end ) as "WOR",  
+		SUM(case when ticker = 'WSM' then 1 end ) as "WSM",  
+		SUM(case when ticker = 'JNJ' then 1 end ) as "JNJ",  
+		SUM(case when ticker = 'WCC' then 1 end ) as "WCC",  
+		SUM(case when ticker = 'MMM' then 1 end ) as "MMM"  
+		from inner_query  
+		group by climate_change_score     
+	on conflict(climate_change_score)  
+	do update set F = EXCLUDED.F,  
+	CMCSA = EXCLUDED.CMCSA,  
+	AAPL = EXCLUDED.AAPL,  
+	ORCL = EXCLUDED.ORCL,  
+	XRX = EXCLUDED.XRX,  
+	WOR = EXCLUDED.WOR,  
+	WSM = EXCLUDED.WSM,  
+	JNJ = EXCLUDED.JNJ,  
+	WCC = EXCLUDED.WCC,  
+	MMM = EXCLUDED.MMM;  
 	return null;  
 	end;  
 
-	--avg_ohlc_function
+	- --avg_ohlc_function
 	begin  
 	  insert into public.avg_ohlc(ticker, open, high, low, close, volume)  
 		SELECT ticker,  
@@ -116,7 +148,7 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	return null;  
 	end;  
 	  
-	--companies_rank_by_mc_function  
+	- --companies_rank_by_mc_function  
 	begin 
 	insert into public.companies_rank_by_market_cap(market_cap_rank, score_rank, ticker, max_mc)  
 	with rank_by_market_cap as  
@@ -129,13 +161,12 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	group by ticker  
 	order by max(market_cap) desc  
 	)  
- 
-	select 
-	case when score_rank in (1,2,3) then 'large_cap'  
-	when score_rank in (8,9,10) then 'small_cap'  
-	else 'mid_cap' end as market_cap_rank,  
-	*  
-	from rank_by_market_cap  
+		select 
+		case when score_rank in (1,2,3) then 'large_cap'  
+		when score_rank in (8,9,10) then 'small_cap'  
+		else 'mid_cap' end as market_cap_rank,  
+		*  
+		from rank_by_market_cap  
 	on conflict(ticker)  
 	do update set market_cap_rank = EXCLUDED.market_cap_rank,  
 	score_rank = EXCLUDED.score_rank,  
@@ -143,21 +174,19 @@ Stock and daily tables are filled from polygon API, climate_score info is scrapp
 	return null;  
 	end;  
 
-	--report_3_function  
-	begin 
-	insert into public.market_cap_rank_analytics(market_cap_rank, avg_market_cap, avg_num_employees, avg_weekly_volume)  
-	select  
-	market_cap_rank,  
-	--extract(year from s.date::date) as year,  
-	--extract(week from s.date::date) as week,  
-	avg(s.market_cap) as avg_market_cap,  
-	avg(s.total_employees) as avg_num_employees,  
-	avg(volume) as avg_weekly_volume  
-	from stock s  
-	left join daily as d on d.ticker = s.ticker and d.date= s.date  
-	left join companies_rank_by_market_cap cr  
-	on s.ticker = cr.ticker  
-	group by market_cap_rank--, year, week  
+	- --report_3_function  
+	begin   
+	    insert into public.market_cap_rank_analytics(market_cap_rank, avg_market_cap, avg_num_employees, avg_weekly_volume)    
+	    select    
+	    market_cap_rank,    
+	    avg(s.market_cap) as avg_market_cap,      
+	    avg(s.total_employees) as avg_num_employees,    
+	    avg(volume) as avg_weekly_volume     
+	    from stock s    
+	    left join daily as d on d.ticker = s.ticker and d.date= s.date    
+	    left join companies_rank_by_market_cap cr    
+	    on s.ticker = cr.ticker    
+	    group by market_cap_rank  
 	on conflict(market_cap_rank)  
 	do update set avg_market_cap = EXCLUDED.avg_market_cap,  
 	avg_num_employees = EXCLUDED.avg_num_employees,  
