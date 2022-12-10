@@ -40,8 +40,15 @@ class AvgOhlc(Resource):
 class ClimateScoreCompany(Resource):
     
     def get(self):
-        data = util.get_data_from_db(table = 'agg_company_per_climate')  # get data from the summary table agg_company...
-        return {'data': data}, 200  # return data and 200 OK
+        data_ = util.get_data_from_db(table = 'agg_company_per_climate')  # get data from the summary table agg_company...
+        data_list = []
+        for item in data_:
+            data = {}
+            t = [k.upper() for k,v in item.items() if v== 1]
+            vowel = item['climate_change_score']
+            data[vowel] = t
+            data_list.append(data)
+        return {'data': data_list}, 200  # return data and 200 OK
 
 class MarketCapRankAnalytics(Resource):
     
